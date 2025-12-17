@@ -113,17 +113,25 @@ class HandTracker {
         push();
 
         for (let hand of this.hands) {
-            // Draw keypoints
-            fill(255, 100);
-            noStroke();
+            // Draw keypoints with interaction radius
             for (let keypoint of hand.keypoints) {
                 let x = map(keypoint.x, 0, this.video.width, 0, width);
                 let y = map(keypoint.y, 0, this.video.height, 0, height);
-                circle(x, y, 8);
+
+                // Draw interaction radius
+                noFill();
+                stroke(0, 255, 0, 50);
+                strokeWeight(1);
+                circle(x, y, 100 * 2); // Water interaction radius
+
+                // Draw keypoint
+                fill(0, 255, 0, 200);
+                noStroke();
+                circle(x, y, 12);
             }
 
             // Draw connections
-            stroke(255, 80);
+            stroke(0, 255, 0, 150);
             strokeWeight(2);
             if (hand.keypoints.length >= 21) {
                 // Draw hand skeleton

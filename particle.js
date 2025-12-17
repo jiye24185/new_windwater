@@ -123,23 +123,23 @@ class Particle {
     waterBodyInteraction(bodyParts) {
         // Water flows and spills around hands
         for (let part of bodyParts) {
-            if (!part || part.confidence < 0.3) continue;
+            if (!part || part.confidence < 0.1) continue;
 
             let partPos = createVector(part.x, part.y);
             let d = p5.Vector.dist(this.pos, partPos);
 
-            // Smaller radius for hand interactions
-            if (d < 50) {
+            // Larger radius for better interaction
+            if (d < 100) {
                 // Push water particles outward and down
                 let force = p5.Vector.sub(this.pos, partPos);
                 force.normalize();
-                force.mult(map(d, 0, 50, 1.2, 0));
-                force.y += 0.3; // Add downward flow
+                force.mult(map(d, 0, 100, 1.5, 0));
+                force.y += 0.4; // Add downward flow
                 this.applyForce(force);
 
                 // Increase velocity for splashing effect
-                if (d < 25) {
-                    this.vel.mult(1.3);
+                if (d < 50) {
+                    this.vel.mult(1.4);
                 }
             }
         }
@@ -148,26 +148,26 @@ class Particle {
     windBodyInteraction(bodyParts) {
         // Wind deflects and wraps around hands
         for (let part of bodyParts) {
-            if (!part || part.confidence < 0.3) continue;
+            if (!part || part.confidence < 0.1) continue;
 
             let partPos = createVector(part.x, part.y);
             let d = p5.Vector.dist(this.pos, partPos);
 
-            // Smaller radius for hand interactions
-            if (d < 60) {
+            // Larger radius for better interaction
+            if (d < 120) {
                 // Calculate deflection perpendicular to approach
                 let toParticle = p5.Vector.sub(this.pos, partPos);
                 let perpendicular = createVector(-toParticle.y, toParticle.x);
                 perpendicular.normalize();
 
                 // Apply wrapping force
-                let strength = map(d, 0, 60, 2.0, 0);
+                let strength = map(d, 0, 120, 2.5, 0);
                 perpendicular.mult(strength);
                 this.applyForce(perpendicular);
 
                 // Also push away slightly
                 toParticle.normalize();
-                toParticle.mult(strength * 0.4);
+                toParticle.mult(strength * 0.5);
                 this.applyForce(toParticle);
             }
         }
@@ -176,13 +176,13 @@ class Particle {
     beamBodyInteraction(bodyParts) {
         // Beams reflect off hands
         for (let part of bodyParts) {
-            if (!part || part.confidence < 0.3) continue;
+            if (!part || part.confidence < 0.1) continue;
 
             let partPos = createVector(part.x, part.y);
             let d = p5.Vector.dist(this.pos, partPos);
 
-            // Smaller radius for hand interactions
-            if (d < 40 && this.bounceCount < this.maxBounces) {
+            // Larger radius for better interaction
+            if (d < 80 && this.bounceCount < this.maxBounces) {
                 // Calculate reflection
                 let normal = p5.Vector.sub(this.pos, partPos);
                 normal.normalize();
@@ -196,7 +196,7 @@ class Particle {
                 this.vel.rotate(random(-0.3, 0.3));
 
                 // Move particle away from collision point
-                this.pos.add(p5.Vector.mult(normal, 15));
+                this.pos.add(p5.Vector.mult(normal, 20));
 
                 this.bounceCount++;
                 this.alpha = min(255, this.alpha + 50); // Flash on bounce

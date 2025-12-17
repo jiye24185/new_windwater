@@ -69,8 +69,19 @@ function draw() {
         }
     }
 
-    // Optional: Draw debug skeleton (uncomment to see hand tracking)
-    // handTracker.drawDebug();
+    // Debug: Draw hand tracking to verify detection
+    handTracker.drawDebug();
+
+    // Debug: Show hand count
+    if (handTracker.ready && handTracker.hands.length > 0) {
+        push();
+        fill(0, 255, 0);
+        noStroke();
+        textSize(16);
+        text(`Hands detected: ${handTracker.hands.length}`, 10, 30);
+        text(`Hand points: ${handPoints.length}`, 10, 50);
+        pop();
+    }
 }
 
 function spawnParticle() {

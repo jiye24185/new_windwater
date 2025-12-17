@@ -1,6 +1,6 @@
 let particles = [];
 let currentMode = 'WATER';
-let bodyTracker;
+let handTracker;
 let typedText = '';
 let lastKeyTime = 0;
 let keyTimeout = 1500; // Reset typed text after 1.5 seconds
@@ -28,16 +28,19 @@ function setup() {
     let canvas = createCanvas(windowWidth, windowHeight);
     canvas.parent('canvas-container');
 
-    // Initialize body tracking
-    bodyTracker = new BodyTracker();
-    bodyTracker.init();
+    // Initialize hand tracking
+    handTracker = new HandTracker();
+    handTracker.init();
+
+    // Setup mode button event listeners
+    setupModeButtons();
 
     // Initial particles
     for (let i = 0; i < 50; i++) {
         spawnParticle();
     }
 
-    console.log('Setup complete. Type WATER, WIND, or BEAM to switch modes.');
+    console.log('Setup complete. Use buttons or type WATER, WIND, or BEAM to switch modes.');
 }
 
 function draw() {
@@ -52,12 +55,12 @@ function draw() {
         }
     }
 
-    // Get body parts for interaction
-    let bodyParts = bodyTracker.ready ? bodyTracker.getBodySilhouette() : [];
+    // Get hand points for interaction
+    let handPoints = handTracker.ready ? handTracker.getHandPoints() : [];
 
     // Update and display particles
     for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].interactWithBody(bodyParts);
+        particles[i].interactWithBody(handPoints);
         particles[i].update();
         particles[i].display();
 
@@ -66,8 +69,8 @@ function draw() {
         }
     }
 
-    // Optional: Draw debug skeleton (uncomment to see body tracking)
-    // bodyTracker.drawDebug();
+    // Optional: Draw debug skeleton (uncomment to see hand tracking)
+    // handTracker.drawDebug();
 }
 
 function spawnParticle() {
@@ -105,15 +108,31 @@ function spawnParticle() {
     particles.push(new Particle(x, y, currentMode));
 }
 
+function setupModeButtons() {
+    const buttons = document.querySelectorAll('.mode-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            switchMode(mode);
+        });
+    });
+}
+
 function switchMode(newMode) {
     if (newMode === currentMode) return;
 
     currentMode = newMode;
 
-    // Update UI
+    // Update mode indicator
     let indicator = document.getElementById('mode-indicator');
     indicator.textContent = currentMode;
     indicator.style.color = getModeColor();
+
+    // Update button active states
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(newMode.toLowerCase() + '-btn').classList.add('active');
 
     // Clear existing particles for clean transition
     particles = [];

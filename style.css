@@ -27,7 +27,6 @@ canvas {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    pointer-events: none;
     z-index: 100;
 }
 
@@ -36,16 +35,74 @@ canvas {
     font-weight: 900;
     letter-spacing: 12px;
     color: rgba(255, 255, 255, 0.15);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
+    pointer-events: none;
 }
 
-#instructions {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+#mode-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    pointer-events: auto;
+}
+
+.mode-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.5);
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+.mode-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+.mode-btn svg {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.mode-btn:hover svg,
+.mode-btn.active svg {
+    opacity: 1;
+}
+
+#water-btn.active {
+    border-color: rgba(100, 150, 255, 0.5);
+    box-shadow: 0 4px 20px rgba(100, 150, 255, 0.3);
+}
+
+#wind-btn.active {
+    border-color: rgba(200, 200, 200, 0.5);
+    box-shadow: 0 4px 20px rgba(200, 200, 200, 0.3);
+}
+
+#beam-btn.active {
+    border-color: rgba(255, 255, 150, 0.5);
+    box-shadow: 0 4px 20px rgba(255, 255, 150, 0.3);
 }
 
 #camera-status {

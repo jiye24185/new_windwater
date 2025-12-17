@@ -25,10 +25,11 @@ An interactive art installation featuring three distinct modes that respond to h
    - Creates a dynamic grid of intersecting light
    - Multi-directional particle behavior
 
-### Body Tracking
+### Hand Tracking
 
-Uses **ml5.js BodyPose** (MoveNet) for real-time human detection:
-- Tracks body keypoints with high accuracy
+Uses **ml5.js HandPose** for precise real-time hand detection:
+- Tracks 21 hand landmarks per hand
+- Supports multiple hands simultaneously
 - Each mode has unique interaction physics
 - Works with standard webcam
 - No special hardware required
@@ -70,26 +71,32 @@ Uses **ml5.js BodyPose** (MoveNet) for real-time human detection:
 
 ### Switching Modes
 
-Simply **type the mode name** anywhere on the screen:
+Two ways to switch modes:
+
+**1. Icon Buttons** (Primary method)
+- Click the **droplet icon** for Water mode
+- Click the **wave icon** for Wind mode
+- Click the **beam icon** for Beam mode
+
+**2. Keyboard Shortcuts**
 - Type `WATER` to activate Water mode
 - Type `WIND` to activate Wind mode
 - Type `BEAM` to activate Beam mode
 
-No need to click or use a text input - just start typing!
-
 ### Interaction
 
-Stand in front of your camera and watch the particles react to your body:
+Show your hands to the camera and watch the particles react:
 
-- **Water Mode**: Move your arms to create waterfalls and splashes
-- **Wind Mode**: The wind flows around your body like an obstacle
-- **Beam Mode**: Beams bounce and reflect off your silhouette
+- **Water Mode**: Move your hands to create waterfalls and splashes - water flows around your fingers
+- **Wind Mode**: The wind deflects and wraps around your hands like obstacles
+- **Beam Mode**: Beams bounce and reflect off your hands in dynamic patterns
 
 ### Tips
 
-- **Lighting**: Ensure good lighting for better body tracking
-- **Distance**: Stand 3-6 feet from the camera
-- **Movement**: Slow, deliberate movements create the most dramatic effects
+- **Lighting**: Ensure good lighting for better hand tracking
+- **Distance**: Position hands 1-3 feet from the camera
+- **Movement**: Slow, deliberate hand movements create the most dramatic effects
+- **Visibility**: Keep hands clearly visible - avoid overlapping with your body
 - **Background**: A simple background improves tracking accuracy
 
 ## Technical Details
@@ -98,7 +105,7 @@ Stand in front of your camera and watch the particles react to your body:
 
 - **p5.js** - Creative coding framework
 - **ml5.js** - Machine learning library
-- **BodyPose (MoveNet)** - Body tracking model
+- **HandPose** - Hand tracking model (MediaPipe Hands)
 - **HTML5 Canvas** - Rendering
 - **WebRTC** - Camera access
 
@@ -159,11 +166,12 @@ const modeSettings = {
 - Close other tabs
 - Use a modern browser
 
-### Body tracking not working
+### Hand tracking not working
 - Improve lighting
 - Check camera is working
-- Ensure clear view of your body
-- Wait for "Camera: Ready" status
+- Ensure hands are clearly visible and not overlapping
+- Wait for "Camera: Ready - Show your hands!" status
+- Try moving hands closer to camera
 
 ## License
 

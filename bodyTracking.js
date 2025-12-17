@@ -1,8 +1,8 @@
-class BodyTracker {
+class HandTracker {
     constructor() {
         this.video = null;
-        this.bodyPose = null;
-        this.poses = [];
+        this.handPose = null;
+        this.hands = [];
         this.ready = false;
         this.modelLoaded = false;
     }
@@ -20,58 +20,83 @@ class BodyTracker {
             });
 
             console.log('Video initialized');
-            this.updateStatus('Camera: Loading model...');
+            this.updateStatus('Camera: Loading hand model...');
 
-            // Initialize BodyPose
-            this.bodyPose = ml5.bodyPose('MoveNet', { flipped: true });
+            // Initialize HandPose
+            this.handPose = ml5.handPose({ flipped: true });
 
             // Wait for model to load
-            await this.bodyPose.ready;
+            await this.handPose.ready;
             this.modelLoaded = true;
 
-            console.log('BodyPose model loaded');
-            this.updateStatus('Camera: Ready');
+            console.log('HandPose model loaded');
+            this.updateStatus('Camera: Ready - Show your hands!');
 
             // Start detection
-            this.bodyPose.detectStart(this.video, this.gotPoses.bind(this));
+            this.handPose.detectStart(this.video, this.gotHands.bind(this));
             this.ready = true;
 
         } catch (error) {
-            console.error('Error initializing body tracking:', error);
+            console.error('Error initializing hand tracking:', error);
             this.updateStatus('Camera: Error - ' + error.message);
         }
     }
 
-    gotPoses(results) {
-        this.poses = results;
+    gotHands(results) {
+        this.hands = results;
     }
 
-    getBodyParts() {
-        if (!this.poses || this.poses.length === 0) return [];
+    getHandPoints() {
+        if (!this.hands || this.hands.length === 0) return [];
 
-        // Get all keypoints from the first detected pose
-        let keypoints = this.poses[0].keypoints;
+        let allPoints = [];
 
-        // Scale keypoints to canvas size
-        return keypoints.map(kp => ({
-            x: map(kp.x, 0, this.video.width, 0, width),
-            y: map(kp.y, 0, this.video.height, 0, height),
-            confidence: kp.confidence,
-            name: kp.name
-        }));
+        // Process all detected hands
+        for (let hand of this.hands) {
+            // Get all keypoints from this hand
+            for (let keypoint of hand.keypoints) {
+                allPoints.push({
+                    x: map(keypoint.x, 0, this.video.width, 0, width),
+                    y: map(keypoint.y, 0, this.video.height, 0, height),
+                    confidence: keypoint.confidence || 1.0,
+                    name: keypoint.name
+                });
+            }
+        }
+
+        return allPoints;
     }
 
-    getBodySilhouette() {
-        // Returns main body points for silhouette detection
-        let parts = this.getBodyParts();
-        if (parts.length === 0) return [];
+    getHandCenters() {
+        // Returns center points of detected hands with larger radius
+        if (!this.hands || this.hands.length === 0) return [];
 
-        // Filter for main body parts with good confidence
-        const mainParts = ['nose', 'left_shoulder', 'right_shoulder',
-                          'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist',
-                          'left_hip', 'right_hip', 'left_knee', 'right_knee'];
+        let centers = [];
 
-        return parts.filter(p => mainParts.includes(p.name) && p.confidence > 0.3);
+        for (let hand of this.hands) {
+            if (hand.keypoints && hand.keypoints.length > 0) {
+                // Calculate center of hand
+                let sumX = 0, sumY = 0;
+                let validPoints = 0;
+
+                for (let kp of hand.keypoints) {
+                    sumX += kp.x;
+                    sumY += kp.y;
+                    validPoints++;
+                }
+
+                if (validPoints > 0) {
+                    centers.push({
+                        x: map(sumX / validPoints, 0, this.video.width, 0, width),
+                        y: map(sumY / validPoints, 0, this.video.height, 0, height),
+                        confidence: 1.0,
+                        name: 'hand_center'
+                    });
+                }
+            }
+        }
+
+        return centers;
     }
 
     updateStatus(message) {
@@ -82,21 +107,53 @@ class BodyTracker {
     }
 
     drawDebug() {
-        // Optional: draw skeleton for debugging
-        if (!this.ready || this.poses.length === 0) return;
+        // Optional: draw hand landmarks for debugging
+        if (!this.ready || this.hands.length === 0) return;
 
         push();
-        stroke(255, 100);
-        strokeWeight(2);
-        noFill();
 
-        let parts = this.getBodyParts();
-        for (let part of parts) {
-            if (part.confidence > 0.3) {
-                circle(part.x, part.y, 10);
+        for (let hand of this.hands) {
+            // Draw keypoints
+            fill(255, 100);
+            noStroke();
+            for (let keypoint of hand.keypoints) {
+                let x = map(keypoint.x, 0, this.video.width, 0, width);
+                let y = map(keypoint.y, 0, this.video.height, 0, height);
+                circle(x, y, 8);
+            }
+
+            // Draw connections
+            stroke(255, 80);
+            strokeWeight(2);
+            if (hand.keypoints.length >= 21) {
+                // Draw hand skeleton
+                this.drawHandSkeleton(hand.keypoints);
             }
         }
 
         pop();
+    }
+
+    drawHandSkeleton(keypoints) {
+        // Finger connections
+        const fingers = [
+            [0, 1, 2, 3, 4],     // thumb
+            [0, 5, 6, 7, 8],     // index
+            [0, 9, 10, 11, 12],  // middle
+            [0, 13, 14, 15, 16], // ring
+            [0, 17, 18, 19, 20]  // pinky
+        ];
+
+        for (let finger of fingers) {
+            for (let i = 0; i < finger.length - 1; i++) {
+                let kp1 = keypoints[finger[i]];
+                let kp2 = keypoints[finger[i + 1]];
+                let x1 = map(kp1.x, 0, this.video.width, 0, width);
+                let y1 = map(kp1.y, 0, this.video.height, 0, height);
+                let x2 = map(kp2.x, 0, this.video.width, 0, width);
+                let y2 = map(kp2.y, 0, this.video.height, 0, height);
+                line(x1, y1, x2, y2);
+            }
+        }
     }
 }

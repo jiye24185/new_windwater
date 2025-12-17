@@ -17,7 +17,26 @@
 
     <div id="ui">
         <div id="mode-indicator">WATER</div>
-        <div id="instructions">Type: WATER | WIND | BEAM</div>
+        <div id="mode-buttons">
+            <button class="mode-btn active" data-mode="WATER" id="water-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="currentColor"/>
+                </svg>
+                <span>WATER</span>
+            </button>
+            <button class="mode-btn" data-mode="WIND" id="wind-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M14 4c-1.1 0-2 .9-2 2h2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2H4v2h10c2.21 0 4-1.79 4-4s-1.79-4-4-4zM6 8c-1.1 0-2 .9-2 2s.9 2 2 2h8v2H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h8v2H6zm12 6H4v2h14c1.1 0 2 .9 2 2s-.9 2-2 2h-4v2h4c2.21 0 4-1.79 4-4s-1.79-4-4-4z" fill="currentColor"/>
+                </svg>
+                <span>WIND</span>
+            </button>
+            <button class="mode-btn" data-mode="BEAM" id="beam-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M3 3l8 8-8 8M21 3l-8 8 8 8M3 11h18M3 13h18" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                <span>BEAM</span>
+            </button>
+        </div>
         <div id="camera-status">Camera: Initializing...</div>
     </div>
 
